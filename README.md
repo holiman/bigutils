@@ -28,11 +28,8 @@ BenchmarkMarshallBigint/0-256bits-noprealloc-64bit-6         	  123219	      961
 
 ### Masking
 
-The `0-256bits-64bit-6` masks `big.Int`s ranging from zero to 256 bits in size, on a
-`64bit` architecture. It does so in `695ns`. 
-The reference implementation uses `big.And`, and clocks in at `3646ns`
+The `0-256bits-6` masks `big.Int`s ranging from zero to 256 bits in size. 
+The reference implementation uses `big.And`.
 ```
-BenchmarkU256/0-256bits-generic-6         	 1329020	       770 ns/op
-BenchmarkU256/0-256bits-64bit-6           	 1704949	       695 ns/op
-BenchmarkU256/0-256bits-bigint-6          	  336811	      3646 ns/op
-```
+BenchmarkU256/0-256bits-6         	 1536889	       715 ns/op
+BenchmarkU256/0-256bits-bigint-6  	  314708	      3850 ns/op```

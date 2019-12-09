@@ -6,6 +6,7 @@ import (
 )
 
 const _S = bits.UintSize / 8 // word size in bytes
+const u256_nWords = 256 / _S
 
 // MarshallBigInt writes 'b' to the buffer 'buf'. It's equivalent to
 // `copy(buf, b.Bytes())`, plus it also returns the number of bytes written.
@@ -167,40 +168,10 @@ h:
 // U256 encodes b as a 256 bit two's complement number. This operation is destructive.
 // It is semantically equivalent to `b = b && (2^256-1)`
 func U256(b *big.Int) {
-	if bits.UintSize == 64 {
-		u256_64bit(b)
-		return
-	}
-	if bits.UintSize == 32 {
-		u256_32bit(b)
-		return
-	}
-	u256_generic(b)
-}
-
-func u256_64bit(x *big.Int) {
-	z := x.Bits()
-	// z consists of Words, which are uint64 on this platforms. We just have to
-	// ensure that there are not more than 4 Words
-	if len := len(z); len > 4 {
-		x.SetBits(z[len-4:])
-	}
-}
-
-func u256_32bit(x *big.Int) {
-	z := x.Bits()
-	// z consists of Words, which are uint32 on this platforms. We just have to
-	// ensure that there are not more than 8 Words
-	if len := len(z); len > 8 {
-		x.SetBits(z[len-8:])
-	}
-}
-func u256_generic(x *big.Int) {
-	z := x.Bits()
+	z := b.Bits()
 	// z consists of Words, which are size _S  on this platforms. We just have to
 	// ensure that there are not more than 256/_S Words
-	nWords := 256 / _S
-	if len := len(z); len > nWords {
-		x.SetBits(z[len-nWords:])
+	if len := len(z); len > u256_nWords {
+		b.SetBits(z[len-u256_nWords:])
 	}
 }

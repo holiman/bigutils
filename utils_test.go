@@ -124,19 +124,11 @@ func u256_ReferenceImpl(x *big.Int) *big.Int {
 }
 
 func TestUint256(t *testing.T) {
-	t.Run("generic", func(t *testing.T) {
-		testUint256(t, u256_generic)
-	})
-	t.Run("64bit", func(t *testing.T) {
-		testUint256(t, u256_64bit)
-	})
-}
-func testUint256(t *testing.T, testfunc func(*big.Int)) {
 	bigint := big.NewInt(0)
 	for i := 0; i < 512; i++ {
 		got := new(big.Int).SetBytes(bigint.Bytes())
 		exp := new(big.Int).SetBytes(bigint.Bytes())
-		testfunc(got)
+		U256(got)
 		u256_ReferenceImpl(exp)
 		if got.Cmp(exp) != 0 {
 			t.Errorf("error: value: %v\n"+
@@ -152,9 +144,8 @@ func testUint256(t *testing.T, testfunc func(*big.Int)) {
 	}
 }
 
-// BenchmarkU256/0-256bits-generic-6         	 1329020	       770 ns/op
-// BenchmarkU256/0-256bits-64bit-6           	 1704949	       695 ns/op
-// BenchmarkU256/0-256bits-bigint-6          	  336811	      3646 ns/op
+//BenchmarkU256/0-256bits-6         	 1536889	       715 ns/op
+//BenchmarkU256/0-256bits-bigint-6  	  314708	      3850 ns/op
 func BenchmarkU256(b *testing.B) {
 	var mkVectors = func() []*big.Int {
 		var bigints = []*big.Int{
@@ -169,17 +160,10 @@ func BenchmarkU256(b *testing.B) {
 		return bigints
 	}
 	bigints := mkVectors()
-	b.Run("0-256bits-generic", func(b *testing.B) {
+	b.Run("0-256bits", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			for _, bigint := range bigints {
-				u256_generic(bigint)
-			}
-		}
-	})
-	b.Run("0-256bits-64bit", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			for _, bigint := range bigints {
-				u256_64bit(bigint)
+				U256(bigint)
 			}
 		}
 	})
