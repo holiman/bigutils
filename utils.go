@@ -5,8 +5,8 @@ import (
 	"math/bits"
 )
 
-const _S = bits.UintSize / 8 // word size in bytes
-const u256_nWords = 256 / _S
+const _S = bits.UintSize / 8            // word size in bytes
+const u256_nWords = 256 / bits.UintSize // number of Words in 256-bit uint
 
 // MarshallBigInt writes 'b' to the buffer 'buf'. It's equivalent to
 // `copy(buf, b.Bytes())`, plus it also returns the number of bytes written.
@@ -167,11 +167,13 @@ h:
 
 // U256 encodes b as a 256 bit two's complement number. This operation is destructive.
 // It is semantically equivalent to `b = b && (2^256-1)`
-func U256(b *big.Int) {
+// WARNING: This method DOES NOT work on negative numbers
+func U256(b *big.Int) *big.Int {
 	z := b.Bits()
 	// z consists of Words, which are size _S  on this platforms. We just have to
 	// ensure that there are not more than 256/_S Words
 	if len := len(z); len > u256_nWords {
-		b.SetBits(z[len-u256_nWords:])
+		b.SetBits(z[:u256_nWords])
 	}
+	return b
 }
